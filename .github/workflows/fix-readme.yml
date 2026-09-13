@@ -1,0 +1,40 @@
+name: Fix README with Uwarp
+on:
+  push:
+    paths:
+      - '.github/workflows/fix-readme.yml'
+  workflow_dispatch:
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Rebuild README from upstream + Uwarp
+        run: |
+          python3 << 'PY'
+          import urllib.request
+          url = 'https://raw.githubusercontent.com/gztchan/awesome-design/master/README.md'
+          master = urllib.request.urlopen(url, timeout=60).read().decode('utf-8')
+          uwarp = '- [Uwarp](https://www.uwarp.design/) Free UI design tools in the browser — SVG, color, icons, mockups, image and audio converters. No signup required.'
+          framer = '- [Framer X](https://framer.com/) Design tool for creating interactive designs, interfaces and animations.'
+          needle = framer + '\n\n## Prototyping'
+          repl = framer + '\n\n' + uwarp + '\n\n## Prototyping'
+          if needle not in master:
+              raise SystemExit('expected Framer X / Prototyping anchor not found')
+          patched = master.replace(needle, repl, 1)
+          if 'uwarp.design' not in patched:
+              raise SystemExit('uwarp not inserted')
+          open('README.md', 'w', encoding='utf-8').write(patched)
+          print('wrote README.md', len(patched), 'chars')
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add README.md
+          if git diff --staged --quiet; then
+            echo 'no changes'
+          else
+            git commit -m "Add Uwarp — free browser UI design tools"
+            git push
+          fi
