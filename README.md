@@ -1,1 +1,1 @@
-@/workspace/awesome-design-README.md
+PLACEHOLDER_REPLACE_WITH_FULL_FILE
