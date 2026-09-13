@@ -1,2 +1,1 @@
-# Awesome Design
-PLACEHOLDER_WILL_REPLACE
+@/workspace/awesome-design-README.md
